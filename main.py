@@ -1,7 +1,6 @@
 import openpyxl
 from datetime import date
 
-
 def calculateAge(birthDate):
     today = date.today()
     age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
@@ -84,6 +83,7 @@ def main():
             else:
                 asset_flag = True
             #######################################################
+            NOTLEFT_PRECENTAGE = 1 - (resignation + dismissal + DAETH)
 
             #print("name - ",name," ID - ",id," gender - ",gender," age - ",age," salary - ",last_salary," seniority - ",seniority," non_article14 - ",non_article14," article14 - ",article14," rate - ",salary_growth_rate)
 
