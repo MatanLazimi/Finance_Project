@@ -38,7 +38,7 @@ def calc_discountrate(years_of_work):
 def sigma(retirement,last_salary):
     years = 1
     discountrate = calc_discountrate(years)
-    pass
+
 def calculation(seniority, non_article14, article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left, discountrate):
     return last_salary * seniority * sigma(retirement_years, last_salary)
 ##############################################################################################
@@ -133,4 +133,5 @@ def main():
 ######################################################################
 
 
-main()
+#main()
+print(calc_discountrate(6))
