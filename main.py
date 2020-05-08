@@ -1,11 +1,32 @@
 import openpyxl
 from datetime import date
 
+sum = 0
 def calculateAge(birthDate):
     today = date.today()
     age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
     return age
 
+def death_calc(gender,age):
+    path = "death.xlsx"
+    wb_obj = openpyxl.load_workbook(path)
+    if (gender == 0):
+        sheet_obj = wb_obj['male']
+        for k in range(3, 96):
+            cell_obj0 = sheet_obj.cell(row=k, column=2)
+            cell_obj1 = sheet_obj.cell(row=k, column=6)
+            if age == cell_obj0.value:
+                return cell_obj1.value
+    else:
+        sheet_obj = wb_obj['female']
+        for k in range(3, 96):
+            cell_obj2 = sheet_obj.cell(row=k, column=2)
+            cell_obj3 = sheet_obj.cell(row=k, column=6)
+            if age == cell_obj2.value:
+                return cell_obj3.value
+
+def calculation(last_salary,seniority,retirement,SG_Rate,death,dismissal,resignation, notLeft, discountrate):
+    return last_salary * seniority * sigma(retirement,last_salary)
 
 def main():
 
@@ -76,17 +97,21 @@ def main():
             #########################################
             #print("resi - ",resignation," diss - ",dismissal,age)
             asset = float(cell_obj8.value)
-            print("name - ", name, " asset - ",asset)
+            #print("name - ", name, " asset - ",asset," age - ",age)
             ################elhanan################################
             if asset == 0.0:
                 asset_flag = False
             else:
                 asset_flag = True
             #######################################################
-            NOTLEFT_PRECENTAGE = 1 - (resignation + dismissal + DAETH)
-
+            death_precentage = death_calc(gender, age)
+            not_left = 1 - (resignation + dismissal + death_precentage)
+            #print("NUM == ", not_left)
             #print("name - ",name," ID - ",id," gender - ",gender," age - ",age," salary - ",last_salary," seniority - ",seniority," non_article14 - ",non_article14," article14 - ",article14," rate - ",salary_growth_rate)
 
+            discountrate = 0
+            calc = calculation(last_salary,seniority,retirement_years,salary_growth_rate,death_precentage,dismissal,resignation,not_left,discountrate)
+            sum = sum + calc
         else:
             pass
             """
