@@ -24,10 +24,24 @@ def death_calc(gender,age):
             cell_obj3 = sheet_obj.cell(row=k, column=6)
             if age == cell_obj2.value:
                 return cell_obj3.value
+######################################################################################################
+def calc_discountrate(years_of_work):
+    path = "data8.xlsx"
+    wb_obj = openpyxl.load_workbook(path)
+    sheet_obj = wb_obj['dis']
+    for k in range(5, 54):
+        cell_obj1 = sheet_obj.cell(row=k, column=2)
+        cell_obj2 = sheet_obj.cell(row=k, column=3)
+        if years_of_work == cell_obj1.value:
+            return cell_obj2.value
 
-def calculation(last_salary,seniority,retirement,SG_Rate,death,dismissal,resignation, notLeft, discountrate):
-    return last_salary * seniority * sigma(retirement,last_salary)
-
+def sigma(retirement,last_salary):
+    years = 1
+    discountrate = calc_discountrate(years)
+    pass
+def calculation(seniority, non_article14, article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left, discountrate):
+    return last_salary * seniority * sigma(retirement_years, last_salary)
+##############################################################################################
 def main():
 
     path = "data8.xlsx"
@@ -109,8 +123,7 @@ def main():
             #print("NUM == ", not_left)
             #print("name - ",name," ID - ",id," gender - ",gender," age - ",age," salary - ",last_salary," seniority - ",seniority," non_article14 - ",non_article14," article14 - ",article14," rate - ",salary_growth_rate)
 
-            discountrate = 0
-            calc = calculation(last_salary,seniority,retirement_years,salary_growth_rate,death_precentage,dismissal,resignation,not_left,discountrate)
+            calc = calculation(seniority, non_article14, article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left)
             sum = sum + calc
         else:
             pass
