@@ -1,7 +1,6 @@
 import openpyxl
 from datetime import date
 
-sum = 0
 def calculateAge(birthDate):
     today = date.today()
     age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
@@ -35,15 +34,64 @@ def calc_discountrate(years_of_work):
         if years_of_work == cell_obj1.value:
             return cell_obj2.value
 
-def sigma(retirement,last_salary):
-    years = 1
-    discountrate = calc_discountrate(years)
 
-def calculation(seniority, non_article14, article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left, discountrate):
-    return last_salary * seniority * sigma(retirement_years, last_salary)
+def calculation(seniority, non_article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left, name, id, article14_precentage, age):
+    calc = 0
+    #check if there is article 14
+    if seniority == non_article14:
+        #if not
+        for t in range(0, retirement_years):
+            ################################################################################
+            mone_dissmisal = ((1+salary_growth_rate)**(t+0.5)) * (not_left ** t) * dismissal
+            mechane_dissmisal = ((1+calc_discountrate(t+1))**(t+0.5))
+            calc_dissmisal = last_salary * seniority * (mone_dissmisal/mechane_dissmisal)
+            ################################################################################
+            if asset_flag:
+                calc_res_asset = asset * resignation
+            else:
+                calc_res_asset = last_salary * resignation
+            ################################################################################
+            mone_death = ((1+salary_growth_rate)**(t+0.5)) * (not_left ** t) * death_precentage
+            mechane_death = ((1+calc_discountrate(t+1))**(t+0.5))
+            calc_death = last_salary * seniority * (mone_death/mechane_death)
+            ################################################################################
+            calc = calc + calc_dissmisal + calc_res_asset + calc_death
+        #print("NAME === ",name ,"ID === ",id," ANSWER === ",calc)
+    else:
+        #if yes article 14
+        if article14_precentage != 1:
+            new_seniority = (1 - article14_precentage) * seniority
+        else:
+            new_seniority = seniority
+        for t in range(0, retirement_years):
+            ################################################################################
+            mone_dissmisal = ((1+salary_growth_rate)**(t+0.5)) * (not_left ** t) * dismissal
+            mechane_dissmisal = ((1+calc_discountrate(t+1))**(t+0.5))
+            calc_dissmisal = last_salary * new_seniority * (mone_dissmisal/mechane_dissmisal)
+            ################################################################################
+            if non_article14 >= 1:
+                if asset_flag:
+                    calc_res_asset = asset * ( not_left**t ) * resignation
+                else:
+                    calc_res_asset = last_salary * ( not_left**t ) * resignation
+            else:
+                calc_res_asset = 0
+            ################################################################################
+            mone_death = ((1+salary_growth_rate)**(t+0.5)) * (not_left ** t) * death_precentage
+            mechane_death = ((1+calc_discountrate(t+1))**(t+0.5))
+            calc_death = last_salary * new_seniority * (mone_death/mechane_death)
+            ################################################################################
+            calc = calc + calc_dissmisal + calc_res_asset + calc_death
+    print("ID === {1}\tNAME === {0}\tANSWER === {2}\tAGE === {3} \n".format(name,id,calc,age),end="")
+    file1 = open("output.txt", "a", encoding='utf-8')
+    # \n is placed to indicate EOL (End of Line)
+    str = "ID === {1}\tNAME === {0}\tANSWER === {2}\tAGE === {3} \n".format(name,id,calc,age)
+    file1.write(str)
+    file1.close()  # to change file access modes
+    return calc
 ##############################################################################################
 def main():
-
+    sum = 0
     path = "data8.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet_obj = wb_obj.active
@@ -55,7 +103,7 @@ def main():
 
 
 #---------------CalcSenyority--------------------------------#
-    for k in range(3, 152):
+    for k in range(3,152):
         cell_obj0 = sheet_obj.cell(row=k, column=2)
         cell_obj1 = sheet_obj.cell(row=k, column=6)
         cell_obj2 = sheet_obj.cell(row=k, column=12)
@@ -65,8 +113,9 @@ def main():
         cell_obj6 = sheet_obj.cell(row=k, column=7)
         cell_obj7 = sheet_obj.cell(row=k, column=8)
         cell_obj8 = sheet_obj.cell(row=k, column=10)
+        cell_obj9 = sheet_obj.cell(row=k, column=9)
         if cell_obj2.value is None or cell_obj2.value == "-" :
-            seniority = (date.today() - cell_obj1.value.date()).days/365.25
+            seniority = (date.today() - (cell_obj1.value).date()).days/365.25
             if cell_obj7.value is None or cell_obj7.value == "-":
                 non_article14 = seniority
             else:
@@ -120,18 +169,26 @@ def main():
             #######################################################
             death_precentage = death_calc(gender, age)
             not_left = 1 - (resignation + dismissal + death_precentage)
+            if cell_obj9.value is not None:
+                article14_precentage = int(cell_obj9.value)/100
+            else:
+                article14_precentage = 0
             #print("NUM == ", not_left)
             #print("name - ",name," ID - ",id," gender - ",gender," age - ",age," salary - ",last_salary," seniority - ",seniority," non_article14 - ",non_article14," article14 - ",article14," rate - ",salary_growth_rate)
 
-            calc = calculation(seniority, non_article14, article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left)
+            calc = calculation(seniority, non_article14, salary_growth_rate, last_salary, retirement_years, resignation, dismissal, asset, asset_flag, death_precentage, not_left, name, id, article14_precentage, age)
             sum = sum + calc
         else:
             pass
             """
             print('left: ',(cell_obj2.value.date() - cell_obj1.value.date()).days/365.25,end=" ")
             """
+    # \n is placed to indicate EOL (End of Line)
+    print(" SUM ALL == ", sum)
+    file1 = open("output.txt", "a", encoding='utf-8')
+    file1.write("SUM ALL == {0}".format(sum))
+    file1.close()  # to change file access modes
 ######################################################################
 
 
-#main()
-print(calc_discountrate(6))
+main()
