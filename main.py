@@ -1,6 +1,8 @@
 import openpyxl
 from datetime import date
-
+#Matan Lazimi - 203987607
+#Elhanan Ben Shabu - 302642889
+#Polina Ovars - 336382114
 def calculateAge(birthDate):
     today = date.today()
     age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
